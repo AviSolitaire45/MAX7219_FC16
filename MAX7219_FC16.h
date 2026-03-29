@@ -53,6 +53,7 @@ private:
     int _csPin;
     int _numModules;
     int _totalColumns;
+    uint8_t _brightness;  // Add this line - brightness level (0-15)
     uint8_t** _displayBuffer;
     
     // Low-level communication

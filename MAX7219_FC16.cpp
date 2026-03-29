@@ -6,6 +6,7 @@ MAX7219_FC16::MAX7219_FC16(int csPin, int numModules) {
     _csPin = csPin;
     _numModules = numModules;
     _totalColumns = numModules * 8;
+    _brightness = 8;  // Default brightness
     
     // Allocate display buffer
     _displayBuffer = new uint8_t*[_totalColumns];
@@ -17,19 +18,23 @@ MAX7219_FC16::MAX7219_FC16(int csPin, int numModules) {
     }
 }
 
-// Initialize the display
+// Initialize the display with professional sequence
 void MAX7219_FC16::begin(uint8_t intensity) {
     pinMode(_csPin, OUTPUT);
     SPI.begin();
     
-    sendToAll(REG_SHUTDOWN, 0x01);
-    sendToAll(REG_DECODEMODE, 0x00);
-    sendToAll(REG_SCANLIMIT, 0x07);
-    sendToAll(REG_INTENSITY, intensity);
-    sendToAll(REG_DISPLAYTEST, 0x00);
+    digitalWrite(_csPin, HIGH);
+    delay(100);
     
-    clear();
-    update();
+    // Professional initialization sequence (copied from original)
+    sendToAll(REG_SHUTDOWN, 0x00);     // Enter shutdown mode
+    delay(10);
+    sendToAll(REG_DISPLAYTEST, 0x00);  // Exit test mode
+    sendToAll(REG_DECODEMODE, 0x00);   // No decode for matrix
+    setIntensity(intensity);            // Set brightness
+    sendToAll(REG_SCANLIMIT, 0x07);     // Scan all 8 digits
+    clear();                            // Clear display
+    sendToAll(REG_SHUTDOWN, 0x01);      // Exit shutdown mode
 }
 
 // Send command to all modules
@@ -40,6 +45,7 @@ void MAX7219_FC16::sendToAll(uint8_t cmd, uint8_t data) {
         SPI.transfer(data);
     }
     digitalWrite(_csPin, HIGH);
+    delayMicroseconds(1);  // Small delay as in original
 }
 
 // Clear the display buffer
@@ -97,6 +103,23 @@ void MAX7219_FC16::update() {
         
         digitalWrite(_csPin, HIGH);
     }
+    delayMicroseconds(1);  // Small delay as in original
+}
+
+// Set brightness (0x00 to 0x0F)
+void MAX7219_FC16::setIntensity(uint8_t intensity) {
+    _brightness = constrain(intensity, 0, 15);
+    sendToAll(REG_INTENSITY, _brightness);
+}
+
+// Shutdown display (power saving)
+void MAX7219_FC16::shutdown() {
+    sendToAll(REG_SHUTDOWN, 0x00);
+}
+
+// Wake up display
+void MAX7219_FC16::wakeup() {
+    sendToAll(REG_SHUTDOWN, 0x01);
 }
 
 // Get font index for character
@@ -195,21 +218,6 @@ void MAX7219_FC16::showModuleNumbers(int delayMs) {
     
     update();
     delay(delayMs);
-}
-
-// Set brightness (0x00 to 0x0F)
-void MAX7219_FC16::setIntensity(uint8_t intensity) {
-    sendToAll(REG_INTENSITY, intensity);
-}
-
-// Shutdown display (power saving)
-void MAX7219_FC16::shutdown() {
-    sendToAll(REG_SHUTDOWN, 0x00);
-}
-
-// Wake up display
-void MAX7219_FC16::wakeup() {
-    sendToAll(REG_SHUTDOWN, 0x01);
 }
 
 // Draw invader sprite (0-11 for different invader types)
