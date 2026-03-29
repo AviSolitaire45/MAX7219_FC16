@@ -199,7 +199,7 @@ void MAX7219_FC16::drawCharToBuffer(int pos, char c, FontSize size, uint8_t** bu
             if (pos + i >= 0 && pos + i < _totalColumns) {
                 uint8_t colData = charData[i] & 0xFF;
                 for (int row = 0; row < 8; row++) {
-                    buffer[pos + i][row] = (colData >> (7 - row)) & 1;
+                    buffer[pos + i][row] = (colData >> (4 - row)) & 1;
                 }
             }
         }
@@ -357,6 +357,9 @@ void MAX7219_FC16::drawInvader(int pos, int invaderType) {
     uint8_t invaderData[5];
     int invaderIndex = 67 + invaderType;
     
+    // Add bounds check for font array
+    if (invaderIndex < 0 || invaderIndex >= font_count) return;
+    
     for (int i = 0; i < 5; i++) {
         invaderData[i] = pgm_read_byte(&myfont[invaderIndex][i]);
         setColumn(pos + i, invaderData[i]);
@@ -369,7 +372,7 @@ int MAX7219_FC16::getFontIndex(char c) {
     
     if (c == ' ') return 0;
     if (c >= 'A' && c <= 'Z') return c - 'A' + 1;
-    if (c >= '0' && c <= '9') return 30 + (c - '0');
+    if (c >= '0' && c <= '9') return 31 + (c - '0');
     if (c == '.') return 27;
     if (c == '\'') return 28;
     if (c == ':') return 29;
@@ -379,6 +382,6 @@ int MAX7219_FC16::getFontIndex(char c) {
 
 // Get number font index
 int MAX7219_FC16::getNumberFontIndex(int num) {
-    if (num >= 0 && num <= 9) return 30 + num;
-    return 30;
+    if (num >= 0 && num <= 9) return 31 + num;
+    return 31;
 }

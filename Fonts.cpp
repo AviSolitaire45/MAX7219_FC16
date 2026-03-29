@@ -1,9 +1,9 @@
 #include "Fonts.h"
 
-// Normal font data (80 characters, 5 columns each)
-const int font_count = 80;
+// Normal font data (79 characters, 5 columns each)
+const int font_count = 79;
 
-const uint8_t myfont[80][5] PROGMEM = {
+const uint8_t myfont[79][5] PROGMEM = {
   {0, 0, 0, 0, 0}, // 0: space
   {0x7E,0x11,0x11,0x11,0x7E}, // 1: A
   {0x7F,0x49,0x49,0x49,0x36}, // 2: B
@@ -75,7 +75,7 @@ const uint8_t myfont[80][5] PROGMEM = {
   {0x18, 0x5,  0x5,  0x5,  0x1E}, // 65: y
   {0x11, 0x13, 0x15, 0x19, 0x11}, // 66: z
   
- // 67: Heart
+  // 67: Heart
   {0x00, 0x0A, 0x1F, 0x0E, 0x04},
   
   // 68: Smiley Face
@@ -109,8 +109,7 @@ const uint8_t myfont[80][5] PROGMEM = {
   {0x7F, 0x41, 0x5D, 0x5D, 0x41},
   
   // 78: WiFi Symbol
-  {0x00, 0x70, 0x08, 0x70, 0x00},
-
+  {0x00, 0x70, 0x08, 0x70, 0x00}
 };
 
 // Big font data (10 characters, 20 columns each)
@@ -209,8 +208,8 @@ void getNormalFontChar(char c, uint8_t* buffer) {
         index = 0;  // Default to space
     }
     
-    // Ensure index is within bounds
-    if (index < 0 || index >= 80) {
+    // Ensure index is within bounds - FIXED to use font_count
+    if (index < 0 || index >= font_count) {
         index = 0;
     }
     
@@ -220,7 +219,7 @@ void getNormalFontChar(char c, uint8_t* buffer) {
 }
 
 void getBigFontChar(int num, uint8_t* buffer) {
-    if (num < 0 || num >= 10) return;
+    if (num < 0 || num >= bigfont_count) return;
     
     for (int i = 0; i < 20; i++) {
         buffer[i] = pgm_read_byte(&mybigfont[num][i]);
@@ -258,8 +257,8 @@ void getTinyFontChar(char c, uint16_t* buffer) {
         index = 0;
     }
     
-    // Ensure index is within bounds
-    if (index < 0 || index >= 42) {
+    // Ensure index is within bounds - FIXED to use tinyfont_count
+    if (index < 0 || index >= tinyfont_count) {
         index = 0;
     }
     

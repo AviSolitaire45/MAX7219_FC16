@@ -7,12 +7,12 @@
 enum FontSize {
     FONT_TINY = 0,    // 3 columns per character
     FONT_NORMAL = 1,  // 5 columns per character
-    FONT_BIG = 2      // 20 columns per character (10 columns actually)
+    FONT_BIG = 2      // 20 columns per character
 };
 
-// Normal font (80 characters, 5 columns each)
+// Normal font (79 characters, 5 columns each)
 extern const int font_count;
-extern const uint8_t myfont[80][5] PROGMEM;
+extern const uint8_t myfont[79][5] PROGMEM;
 
 // Big font (10 characters, 20 columns each)
 extern const int bigfont_count;
